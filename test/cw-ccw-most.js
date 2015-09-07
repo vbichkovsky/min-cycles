@@ -37,6 +37,10 @@ test('starting at d', () => {
     expect(cw_most(d,b,[c,a,e])).to.be(e);
 });
 
+test('undefined starting point', () => {
+    expect(cw_most(undefined, b, [a,c,d,e])).to.be(e);
+});
+
 suite('ccw-most');
 
 test('no adjacent', () => {
@@ -61,4 +65,8 @@ test('starting at e', () => {
 
 test('starting at d', () => {
     expect(ccw_most(d,b,[c,a,e])).to.be(c);
+});
+
+test('undefined starting point', () => {
+    expect(ccw_most(undefined, b, [a,c,d,e])).to.be(c);
 });

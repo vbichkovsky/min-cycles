@@ -23,7 +23,7 @@ function extract_primitive(v, vertices, edges, result) {
 };
 
 function extract_filament(v0, v1, vertices, edges, result) {
-    if (is_cycle_edge(v0, v1)) {
+    if (is_cycle_edge(v0, v1, edges)) {
         let adjacent = adjacent_to(v0, edges);
         if (adjacent.length >= 3) {
             remove_edge(v0, v1, edges);
@@ -34,7 +34,7 @@ function extract_filament(v0, v1, vertices, edges, result) {
         adjacent = adjacent_to(v0, edges);
         while (adjacent.length == 1) {
             v1 = adjacent[0];
-            if (is_cycle_edge(v0, v1)) {
+            if (is_cycle_edge(v0, v1, edges)) {
                 remove_vertex(v0, vertices);
                 remove_edge(v0, v1, edges);
                 v0 = v1;
@@ -69,8 +69,65 @@ function extract_filament(v0, v1, vertices, edges, result) {
     }
 }
 
-function is_cycle_edge(a, b) {
-    return false;
+export function extract_primitive(v, vertices, edges, result) {
+    let visited = [], sequence = [], adjacent = adjacent_to(v, edges);
+    sequence.push(v);
+    let v1 = cw_most(undefined, v0, adjacent),
+        v_prev = v,
+        v_curr = v1,
+        v_next;
+    while (v_curr && v_curr != v && v_curr && visited.indexof(v_curr) == -1) {
+        sequence.push(v_curr);
+        visited.push(v_curr);
+        adjacent = adjacent_to(v_curr, edges);
+        v_next = ccw_most(v_prev, v_curr, adjacent);
+        v_prev = v_curr;
+        v_curr = v_next;
+    }
+    
+    if (!v_curr) {
+        extract_filament(v_prev, adjacent[0], vertices, edges, result);
+    } else if (v_curr == v) {
+        result.cycles.push(sequence);
+        mark_cycle_edges(sequence, edges);
+        remove_edge(v, v1, edges);
+        adjacent = adjacent_to(v, edges);
+        if (adjacent.length == 1) {
+            extract_filament(v, adjacent[0], vertices, edges, result);
+        }
+        adjacent = adjacent_to(v1, edges);
+        if (adjacent.length == 1) {
+            extract_filament(v1, adjacent[0], vertices, edges, result);
+        }
+    } else {
+        adjacent = adjacent_to(v, edges);
+        while (adjacent.length == 2) {
+            if (adjacent[0] != v1) {
+                v1 = v;
+                v = adjacent[0];
+            } else {
+                v1 = v;
+                v = adjacent[1];
+            }
+            adjacent = adjacent_to(v, edges);
+        }
+        extract_filament(v, v1, vertices, edges, result);
+    }
+};
+
+function mark_cycle_edges(sequence, edges) {
+    sequence.forEach((v, i, s) => {
+        find_edge(v, s[i + 1] || s[0], edges).is_cycle_edge = true;
+    });
+};
+
+function is_cycle_edge(a, b, edges) {
+    if (!b) return false;
+    return find_edge(a,b,edges).is_cycle_edge;
+};
+
+function find_edge(a, b, edges) {
+    return edges.find(e => veql(a, e[0]) && veql(b, e[1]) || veql(a, e[1]) && veql(b, e[0]));
 };
 
 function remove_edge(a, b, edges) {
@@ -104,7 +161,7 @@ export function ccw_most(v_prev, v_curr, adjacent) {
 };
 
 function best_by_kind(v_prev, v_curr, adjacent, kind) {
-    let d_curr = vsub(v_curr, v_prev);
+    let d_curr = v_prev ? vsub(v_curr, v_prev) : [0,-1];
 
     return adjacent.reduce( (v_so_far, v) => better_by_kind(v, v_so_far, v_curr, d_curr, kind), 
                             adjacent[0]);

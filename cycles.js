@@ -7,19 +7,19 @@ export function extract_primitives(vertices, edges) {
         let v = vertices[0],
             adjacent = adjacent_to(v, edges);
         if (adjacent.length == 0) {
+            console.log('isolated vertex ' + JSON.stringify(v));
             result.isolated.push(v);
             remove_vertex(v, vertices);
         } else if (adjacent.length == 1) {
+            console.log('filament starting at ' + JSON.stringify(v));
             extract_filament(v, undefined, vertices, edges, result);
         } else {
+            console.log('primitive starting at ' + JSON.stringify(v));
             extract_primitive(v, vertices, edges, result);
         }
     };
 
     return result;
-};
-
-function extract_primitive(v, vertices, edges, result) {
 };
 
 function extract_filament(v0, v1, vertices, edges, result) {
@@ -66,21 +66,23 @@ function extract_filament(v0, v1, vertices, edges, result) {
         filament.push(v0);
         if (adjacent.length == 0) remove_vertex(v0, vertices);
         result.filaments.push(filament);
+        console.log('filament extracted: ' + JSON.stringify(filament));
     }
 }
 
 export function extract_primitive(v, vertices, edges, result) {
     let visited = [], sequence = [], adjacent = adjacent_to(v, edges);
     sequence.push(v);
-    let v1 = cw_most(undefined, v0, adjacent),
+    let v1 = cw_most(undefined, v, adjacent),
         v_prev = v,
         v_curr = v1,
         v_next;
-    while (v_curr && v_curr != v && v_curr && visited.indexof(v_curr) == -1) {
+    while (v_curr && v_curr != v && v_curr && visited.indexOf(v_curr) == -1) {
         sequence.push(v_curr);
         visited.push(v_curr);
         adjacent = adjacent_to(v_curr, edges);
         v_next = ccw_most(v_prev, v_curr, adjacent);
+        console.log('ccw_most: ' + JSON.stringify([v_prev, v_curr, v_next]));
         v_prev = v_curr;
         v_curr = v_next;
     }
@@ -88,6 +90,7 @@ export function extract_primitive(v, vertices, edges, result) {
     if (!v_curr) {
         extract_filament(v_prev, adjacent[0], vertices, edges, result);
     } else if (v_curr == v) {
+        console.log('cycle found: ' + JSON.stringify(sequence));
         result.cycles.push(sequence);
         mark_cycle_edges(sequence, edges);
         remove_edge(v, v1, edges);
@@ -131,11 +134,13 @@ function find_edge(a, b, edges) {
 };
 
 function remove_edge(a, b, edges) {
+    console.log('removing edge ' + JSON.stringify([a,b]));
     let idx = edges.findIndex(e => veql(a, e[0]) && veql(b, e[1]) || veql(a, e[1]) && veql(b, e[0]));
     if (idx != -1) edges.splice(idx, 1);
 }
 
 function remove_vertex(v, vertices) {
+    console.log('removing vertex ' + JSON.stringify(v));
     let idx = vertices.findIndex(vi => veql(v, vi));
     if (idx != -1) vertices.splice(idx, 1);
 }
@@ -161,7 +166,15 @@ export function ccw_most(v_prev, v_curr, adjacent) {
 };
 
 function best_by_kind(v_prev, v_curr, adjacent, kind) {
-    let d_curr = v_prev ? vsub(v_curr, v_prev) : [0,-1];
+    let d_curr;
+    if (v_prev) {
+        d_curr = vsub(v_curr, v_prev);
+        let idx = adjacent.findIndex(vi => veql(v_prev, vi));
+        if (idx != -1) adjacent.splice(idx, 1);
+        // can be done with remove_vertex(v_prev, adjacent);
+    } else {
+        d_curr = [0,-1];
+    }
 
     return adjacent.reduce( (v_so_far, v) => better_by_kind(v, v_so_far, v_curr, d_curr, kind), 
                             adjacent[0]);

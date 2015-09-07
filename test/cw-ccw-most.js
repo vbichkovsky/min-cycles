@@ -21,6 +21,10 @@ test('one adjacent', () => {
     expect(cw_most(a,b,[e])).to.be(e);
 });
 
+test('one adjacent, same as starting point', () => {
+    expect(cw_most(a,b,[a])).to.be(undefined);
+});
+
 test('starting at a', () => {
     expect(cw_most(a,b,[d,c,e])).to.be(c);
 });
@@ -49,6 +53,10 @@ test('no adjacent', () => {
 
 test('one adjacent', () => {
     expect(ccw_most(a,b,[e])).to.be(e);
+});
+
+test('one adjacent, same as starting point', () => {
+    expect(cw_most(a,b,[a])).to.be(undefined);
 });
 
 test('starting at a', () => {

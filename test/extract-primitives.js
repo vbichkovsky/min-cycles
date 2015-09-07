@@ -2,8 +2,12 @@ let expect = require('expect.js');
 
 import {extract_primitives as ep} from '../cycles';
 
-let [a,b,c] = [[1,0], [2,0], [3,0]];
-let [e1, e2] = [[a,b], [b,c]];
+let a,b,c,d,e1,e2,e3;
+
+beforeEach( () => {
+    [a,b,c,d] = [[1,0], [2,0], [3,0], [3,1]];
+    [e1, e2, e3] = [[a,b], [b,c], [b,d]];
+});
 
 test('empty graph', () => {
     let extracted = ep([], []);
@@ -36,6 +40,13 @@ test('two-segment filament', () => {
     expect(extracted.filaments).to.eql([[a,b,c]]);
 });
 
-test('a fork from two filaments');
-test('filament starting at a branch vertex');
+test('filament starting at a branch vertex', () => {
+    let extracted = ep([b,c,d], [e2, e3]);
+    expect(extracted.filaments).to.eql([[d,b,c]]);
+});
+
+test('a fork from two filaments', () => {
+    let extracted = ep([a,b,c,d], [e1, e2, e3]);
+    expect(extracted.filaments).to.eql([[a,b],[d,b,c]]);
+});
 

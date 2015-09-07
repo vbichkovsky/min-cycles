@@ -1,6 +1,5 @@
 export function extract_primitives(vertices, edges) {
     vertices.sort( (a,b) => a[0] != b[0] ? a[0] - b[0] : b[1] - a[1] );
-
     let result = {isolated: [], cycles: [], filaments: []};
 
     while (vertices.length > 0) {

@@ -25,24 +25,28 @@ export function extract_primitives(vertices, edges) {
     return result;
 };
 
-function extract_filament(v0, v1, vertices, result, cycle_edges) {
-    if (is_cycle_edge(v0, v1, cycle_edges)) {
-        if (v0.adj.length >= 3) {
+function remove_filament(v0, v1, vertices, cycle_edges) {
+    if (v0.adj.length >= 3) {
+        remove_edge(v0, v1);
+        v0 = v1;
+        if (v0.adj.length == 1) v1 = v0.adj[0];
+    }
+    while (v0.adj.length == 1) {
+        v1 = v0.adj[0];
+        if (is_cycle_edge(v0, v1, cycle_edges)) {
+            remove_vertex(v0, vertices);
             remove_edge(v0, v1);
             v0 = v1;
-            if (v0.adj.length == 1) v1 = v0.adj[0];
+        } else {
+            break;
         }
-        while (v0.adj.length == 1) {
-            v1 = v0.adj[0];
-            if (is_cycle_edge(v0, v1, cycle_edges)) {
-                remove_vertex(v0, vertices);
-                remove_edge(v0, v1);
-                v0 = v1;
-            } else {
-                break;
-            }
-        }
-        if (v0.adj.length == 0) remove_vertex(v0, vertices);
+    }
+    if (v0.adj.length == 0) remove_vertex(v0, vertices);
+};
+
+function extract_filament(v0, v1, vertices, result, cycle_edges) {
+    if (is_cycle_edge(v0, v1, cycle_edges)) {
+        remove_filament(v0, v1, vertices, cycle_edges);
     } else {
         let filament = [];
         if (v0.adj.length >= 3) {
@@ -86,10 +90,10 @@ function extract_primitive(v, vertices, result, cycle_edges) {
         mark_cycle_edges(sequence, cycle_edges);
         remove_edge(v, v1);
         if (v.adj.length == 1) {
-            extract_filament(v, v.adj[0], vertices, result, cycle_edges);
+            remove_filament(v, v.adj[0], vertices, cycle_edges);
         }
         if (v1.adj.length == 1) {
-            extract_filament(v1, v1.adj[0], vertices, result, cycle_edges);
+            remove_filament(v1, v1.adj[0], vertices, cycle_edges);
         }
     } else {
         while (v.adj.length == 2) {

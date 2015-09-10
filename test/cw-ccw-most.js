@@ -1,8 +1,9 @@
 let expect = require('expect.js'),
     rewire = require('rewire'),
     cycles = rewire('../cycles'),
-    cw_most = cycles.__get__('cw_most'), 
-    ccw_most = cycles.__get__('ccw_most');
+    bbk = cycles.__get__('best_by_kind'),
+    cw = (a,b) => bbk(a,b,'cw'),
+    ccw = (a,b) => bbk(a,b,'ccw');
 
 `
       a
@@ -11,72 +12,90 @@ let expect = require('expect.js'),
       / | \
      c  d  e       `;
 
-var [a,b,c,d,e] = [[0,0],[1,1],[0,2],[1,2],[2,2]];
+let a,b,c,d,e, 
+    setup = () => {
+        [a,b,c,d,e] = [[0,0],[1,1],[0,2],[1,2],[2,2]];
+        b.adj = [a,c,d,e];
+        a.adj = [b];
+        c.adj = [b];
+        d.adj = [b];
+        e.adj = [b];
+    };
 
 suite('cw-most');
 
+beforeEach(setup);
+
 test('no adjacent', () => {
-    expect(cw_most(a,b,[])).to.be(undefined);
+    b.adj = [];
+    expect(cw(a,b)).to.be(undefined);
 });
 
 test('one adjacent', () => {
-    expect(cw_most(a,b,[e])).to.be(e);
+    b.adj = [e];
+    expect(cw(a,b)).to.be(e);
 });
 
 test('one adjacent, same as starting point', () => {
-    expect(cw_most(a,b,[a])).to.be(undefined);
+    b.adj = [a];
+    expect(cw(a,b)).to.be(undefined);
 });
 
 test('starting at a', () => {
-    expect(cw_most(a,b,[d,c,e])).to.be(c);
+    expect(cw(a,b)).to.be(c);
 });
 
 test('starting at c', () => {
-    expect(cw_most(c,b,[a,d,e])).to.be(d);
+    expect(cw(c,b)).to.be(d);
 });
 
 test('starting at e', () => {
-    expect(cw_most(e,b,[c,a,d])).to.be(a);
+    expect(cw(e,b)).to.be(a);
 });
 
 test('starting at d', () => {
-    expect(cw_most(d,b,[c,a,e])).to.be(e);
+    expect(cw(d,b)).to.be(e);
 });
 
 test('undefined starting point', () => {
-    expect(cw_most(undefined, b, [a,c,d,e])).to.be(e);
+    expect(cw(undefined, b)).to.be(e);
 });
 
 suite('ccw-most');
 
+beforeEach(setup);
+
 test('no adjacent', () => {
-    expect(ccw_most(a,b,[])).to.be(undefined);
+    b.adj = [];
+    expect(ccw(a,b)).to.be(undefined);
 });
 
 test('one adjacent', () => {
-    expect(ccw_most(a,b,[e])).to.be(e);
+    b.adj = [e];
+    expect(ccw(a,b)).to.be(e);
 });
 
 test('one adjacent, same as starting point', () => {
-    expect(cw_most(a,b,[a])).to.be(undefined);
+    b.adj = [a];
+    expect(cw(a,b)).to.be(undefined);
 });
 
 test('starting at a', () => {
-    expect(ccw_most(a,b,[d,c,e])).to.be(e);
+    expect(ccw(a,b)).to.be(e);
 });
 
 test('starting at c', () => {
-    expect(ccw_most(c,b,[a,d,e])).to.be(a);
+    expect(ccw(c,b)).to.be(a);
 });
 
 test('starting at e', () => {
-    expect(ccw_most(e,b,[c,a,d])).to.be(d);
+    expect(ccw(e,b)).to.be(d);
 });
 
 test('starting at d', () => {
-    expect(ccw_most(d,b,[c,a,e])).to.be(c);
+    expect(ccw(d,b)).to.be(c);
 });
 
 test('undefined starting point', () => {
-    expect(ccw_most(undefined, b, [a,c,d,e])).to.be(c);
+    expect(ccw(undefined, b)).to.be(c);
 });

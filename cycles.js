@@ -71,14 +71,14 @@ function extract_filament(v0, v1, vertices, result, cycle_edges) {
 function extract_primitive(v, vertices, result, cycle_edges) {
     let visited = [], sequence = [];
     sequence.push(v);
-    let v1 = cw_most(undefined, v, v.adj),
+    let v1 = best_by_kind(undefined, v, 'cw'),
         v_prev = v,
         v_curr = v1,
         v_next;
     while (v_curr && v_curr != v && v_curr && visited.indexOf(v_curr) == -1) {
         sequence.push(v_curr);
         visited.push(v_curr);
-        v_next = ccw_most(v_prev, v_curr, v_curr.adj);
+        v_next = best_by_kind(v_prev, v_curr, 'ccw');
         v_prev = v_curr;
         v_curr = v_next;
     }
@@ -133,26 +133,16 @@ function remove_vertex(v, vertices) {
     if (idx != -1) vertices.splice(idx, 1);
 }
 
-function cw_most(v_prev, v_curr, adjacent) {
-    return best_by_kind(v_prev, v_curr, adjacent, 'cw');
-};
-
-function ccw_most(v_prev, v_curr, adjacent) {
-    return best_by_kind(v_prev, v_curr, adjacent, 'ccw');
-};
-
-function best_by_kind(v_prev, v_curr, adjacent, kind) {
-    let d_curr, vertices = adjacent.slice();
+function best_by_kind(v_prev, v_curr, kind) {
+    let d_curr, adj = v_curr.adj.slice();
     if (v_prev) {
         d_curr = vsub(v_curr, v_prev);
-        let idx = vertices.findIndex(vi => veql(v_prev, vi));
-        if (idx != -1) vertices.splice(idx, 1);
+        remove_vertex(v_prev, adj);
     } else {
         d_curr = [0,-1];
     }
 
-    return vertices.reduce( (v_so_far, v) => better_by_kind(v, v_so_far, v_curr, d_curr, kind), 
-                            vertices[0]);
+    return adj.reduce( (v_so_far, v) => better_by_kind(v, v_so_far, v_curr, d_curr, kind), adj[0]);
 };
 
 function better_by_kind(v, v_so_far, v_curr, d_curr, kind) {

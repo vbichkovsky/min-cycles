@@ -1,6 +1,14 @@
-let expect = require('expect.js');
+let expect = require('expect.js'),
+    rewire = require('rewire'),
+    cycles = rewire('../cycles'),
+    ep = cycles.__get__('extract_primitives');
 
-import {extract_primitives as ep} from '../cycles';
+let veql_orig = cycles.__get__('veql'),
+    nveql = 0;
+
+cycles.__set__('veql', (a,b) => {
+    nveql = nveql + 1;
+    return veql_orig(a,b); });
 
 suite('the complex graph from the PDF');
 
@@ -40,4 +48,5 @@ test('all kinds of primitives', () => {
         [c9,c11,c10],
         [c14,c13,c12,c11],
         [c15,c17,c16] ]);
+    console.log(`${nveql} veql calls`);
 });

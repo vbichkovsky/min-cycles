@@ -13,14 +13,11 @@ export function extract_primitives(vertices, edges) {
     while (vertices.length > 0) {
         let v = vertices[0];
         if (v.adj.length == 0) {
-            console.log('isolated vertex ' + JSON.stringify(v));
             result.isolated.push(v);
             remove_vertex(v, vertices);
         } else if (v.adj.length == 1) {
-            console.log('filament starting at ' + JSON.stringify(v));
             extract_filament(v, undefined, vertices, result, cycle_edges);
         } else {
-            console.log('primitive starting at ' + JSON.stringify(v));
             extract_primitive(v, vertices, result, cycle_edges);
         }
     };
@@ -64,7 +61,6 @@ function extract_filament(v0, v1, vertices, result, cycle_edges) {
         filament.push(v0);
         if (v0.adj.length == 0) remove_vertex(v0, vertices);
         result.filaments.push(filament);
-        console.log('filament extracted: ' + JSON.stringify(filament));
     }
 }
 
@@ -86,7 +82,6 @@ function extract_primitive(v, vertices, result, cycle_edges) {
     if (!v_curr) {
         extract_filament(v_prev, v_prev.adj[0], vertices, result, cycle_edges);
     } else if (v_curr == v) {
-        console.log('cycle found: ' + JSON.stringify(sequence));
         result.cycles.push(sequence);
         mark_cycle_edges(sequence, cycle_edges);
         remove_edge(v, v1);
@@ -122,13 +117,11 @@ function is_cycle_edge(a, b, cycle_edges) {
 };
 
 function remove_edge(a, b) {
-    console.log('removing edge ' + JSON.stringify([a,b]));
     remove_vertex(a, b.adj);
     remove_vertex(b, a.adj);
 }
 
 function remove_vertex(v, vertices) {
-    console.log('removing vertex ' + JSON.stringify(v));
     let idx = vertices.findIndex(vi => veql(v, vi));
     if (idx != -1) vertices.splice(idx, 1);
 }

@@ -1,0 +1,36 @@
+{
+  "name": "min-cycles",
+  "version": "0.1.0",
+  "description": "Minimal cycle basis for a planar graph",
+  "main": "lib/cycles.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "rewire": "^2.3.4",
+    "babel": "^5.8.23",
+    "mocha": "^2.3.2",
+    "expect.js": "^0.3.1"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha",
+    "prepublish" : "node_modules/.bin/babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbichkovsky/min-cycles.git"
+  },
+  "keywords": [
+    "graph",
+    "minimal",
+    "cycles"
+  ],
+  "author": "Valentine Bichkovsky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vbichkovsky/min-cycles/issues"
+  },
+  "homepage": "https://github.com/vbichkovsky/min-cycles#readme"
+}

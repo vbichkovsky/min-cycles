@@ -3,7 +3,7 @@
 Extracts primitives - minimal cycles, filaments and isolated
 vertices - from a planar undirected graph.
 
-Based on pseudocode from [http://www.geometrictools.com/Documentation/MinimalCycleBasis.pdf](this document).
+Based on pseudocode from [this document](http://www.geometrictools.com/Documentation/MinimalCycleBasis.pdf).
 
 Differences with the document: a left-handed coordinate system is
 used, the positive Y axis direction is top-to-bottom.
@@ -22,3 +22,8 @@ used, the positive Y axis direction is top-to-bottom.
     # filaments => [ [[1,2], [5,6]] ];
     # isolated => [3,4];
 
+## BUILD
+npm run-script prepublish
+
+## TEST
+npm run-script test

@@ -1,6 +1,6 @@
 let expect = require('expect.js'),
     rewire = require('rewire'),
-    cycles = rewire('../cycles'),
+    cycles = rewire('../src/cycles'),
     ep = cycles.__get__('extract_primitives');
 
 let veql_orig = cycles.__get__('veql'),

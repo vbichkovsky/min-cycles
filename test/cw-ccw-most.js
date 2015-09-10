@@ -1,6 +1,6 @@
 let expect = require('expect.js'),
     rewire = require('rewire'),
-    cycles = rewire('../cycles'),
+    cycles = rewire('../src/cycles'),
     bbk = cycles.__get__('best_by_kind'),
     cw = (a,b) => bbk(a,b,'cw'),
     ccw = (a,b) => bbk(a,b,'ccw');

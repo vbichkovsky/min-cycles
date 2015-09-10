@@ -1,6 +1,6 @@
 let expect = require('expect.js');
 
-import {extract_primitives as ep} from '../cycles';
+import {extract_primitives as ep} from '../src/cycles';
 
 let a,b,c,d,f,e1,e2,e3,e4;
 

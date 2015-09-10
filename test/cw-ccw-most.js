@@ -1,6 +1,8 @@
-let expect = require('expect.js');
-
-import {cw_most, ccw_most} from '../cycles';
+let expect = require('expect.js'),
+    rewire = require('rewire'),
+    cycles = rewire('../cycles'),
+    cw_most = cycles.__get__('cw_most'), 
+    ccw_most = cycles.__get__('ccw_most');
 
 `
       a

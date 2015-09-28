@@ -74,13 +74,15 @@ function extract_primitive(v, vertices, result, cycle_edges) {
     let v1 = best_by_kind(undefined, v, 'cw'),
         v_prev = v,
         v_curr = v1,
-        v_next;
-    while (v_curr && v_curr != v && v_curr && visited.indexOf(v_curr) == -1) {
+        v_next,
+        visited_idx = -1;
+    while (v_curr && v_curr != v && visited_idx == -1) {
         sequence.push(v_curr);
         visited.push(v_curr);
         v_next = best_by_kind(v_prev, v_curr, 'ccw');
         v_prev = v_curr;
         v_curr = v_next;
+        visited_idx = visited.indexOf(v_curr);
     }
     
     if (!v_curr) {
@@ -96,16 +98,7 @@ function extract_primitive(v, vertices, result, cycle_edges) {
             remove_filament(v1, v1.adj[0], vertices, cycle_edges);
         }
     } else {
-        while (v.adj.length == 2) {
-            if (v.adj[0] != v1) {
-                v1 = v;
-                v = v.adj[0];
-            } else {
-                v1 = v;
-                v = v.adj[1];
-            }
-        }
-        extract_filament(v, v1, vertices, result, cycle_edges);
+        extract_primitive(visited[visited_idx + 1], vertices, result, cycle_edges);
     }
 };
 

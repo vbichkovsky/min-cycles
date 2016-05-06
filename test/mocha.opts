@@ -1,3 +1,2 @@
 --ui qunit
---harmony
 --compilers js:babel/register

@@ -13,7 +13,6 @@ export function extract_primitives(vertices, edges) {
     while (vertices.length > 0) {
         let v = vertices[0];
         if (v.adj.length == 0) {
-            console.log('isolated', v);
             result.isolated.push(v);
             remove_vertex(v, vertices);
         } else if (v.adj.length == 1) {
@@ -27,7 +26,6 @@ export function extract_primitives(vertices, edges) {
 };
 
 function remove_filament(v0, v1, vertices, cycle_edges, edges) {
-    console.log('removing filament from', edge_tag(v0, v1, edges));
     if (v0.adj.length >= 3) {
         remove_edge(v0, v1, edges);
         v0 = v1;
@@ -44,15 +42,9 @@ function remove_filament(v0, v1, vertices, cycle_edges, edges) {
         }
     }
     if (v0.adj.length == 0) remove_vertex(v0, vertices);
-    console.log('end remove filament');
 };
 
 function extract_filament(v0, v1, vertices, result, cycle_edges, edges) {
-    if (v1) {
-        console.log('extracting filament from', edge_tag(v0, v1, edges));
-    } else {
-        console.log('extracting filament from', v0);
-    }
     if (is_cycle_edge(v0, v1, cycle_edges)) {
         remove_filament(v0, v1, vertices, cycle_edges, edges);
     } else {
@@ -72,13 +64,11 @@ function extract_filament(v0, v1, vertices, result, cycle_edges, edges) {
         }
         filament.push(v0);
         if (v0.adj.length == 0) remove_vertex(v0, vertices);
-        console.log('filament', fmt(filament, edges));
         result.filaments.push(filament);
     }
 }
 
 function extract_primitive(v, vertices, result, cycle_edges, edges) {
-    console.log('extracting primitive from', v[0], v[1]);
     let visited = [], sequence = [];
     sequence.push(v);
     let v1 = best_by_kind(undefined, v, 'cw'),
@@ -98,7 +88,6 @@ function extract_primitive(v, vertices, result, cycle_edges, edges) {
     if (!v_curr) {
         extract_filament(v_prev, v_prev.adj[0], vertices, result, cycle_edges, edges);
     } else if (v_curr == v) {
-        console.log('cycle', fmt(sequence, edges));
         result.cycles.push(sequence);
         mark_cycle_edges(sequence, cycle_edges, edges);
         remove_edge(v, v1, edges);
@@ -114,7 +103,6 @@ function extract_primitive(v, vertices, result, cycle_edges, edges) {
 };
 
 function mark_cycle_edges(sequence, cycle_edges, edges) {
-    console.log('marking cycle edges', fmt(sequence, edges));
     sequence.forEach((v, i, s) => {
         cycle_edges.push([v, s[i + 1] || s[0]]);
     });
@@ -126,7 +114,6 @@ function is_cycle_edge(a, b, cycle_edges) {
 };
 
 function remove_edge(a, b, edges) {
-    console.log('removing edge', edge_tag(a, b, edges));
     remove_vertex(a, b.adj);
     remove_vertex(b, a.adj);
 }
@@ -153,12 +140,12 @@ function best_by_kind(v_prev, v_curr, kind) {
 function better_by_kind(v, v_so_far, v_curr, d_curr, kind) {
     let d = vsub(v, v_curr),
         d_so_far = vsub(v_so_far, v_curr),
-        is_convex = dot_perp(d_so_far, d_curr) >= 0,
+        is_convex = dot_perp(d_so_far, d_curr) > 0,
         curr2v = dot_perp(d_curr, d),
         vsf2v = dot_perp(d_so_far, d),
         v_is_better;
     if (kind == 'cw') {
-        v_is_better = (is_convex && (curr2v > 0 || vsf2v > 0)) || (!is_convex && curr2v > 0 && vsf2v > 0);
+        v_is_better = (is_convex && (curr2v >= 0 || vsf2v >= 0)) || (!is_convex && curr2v >= 0 && vsf2v >= 0);
     } else {
         v_is_better = (!is_convex && (curr2v < 0 || vsf2v < 0)) || (is_convex && curr2v < 0 && vsf2v < 0);
     }

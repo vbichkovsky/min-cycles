@@ -58,7 +58,7 @@ test('starting at d', () => {
 });
 
 test('undefined starting point', () => {
-    expect(cw(undefined, b)).to.be(e);
+    expect(cw(undefined, b)).to.be(d);
 });
 
 suite('ccw-most');

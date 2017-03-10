@@ -3,7 +3,8 @@ let expect = require('expect.js'),
     cycles = rewire('../src/cycles'),
     bbk = cycles.__get__('best_by_kind'),
     cw = (a,b) => bbk(a,b,'cw'),
-    ccw = (a,b) => bbk(a,b,'ccw');
+    ccw = (a,b) => bbk(a,b,'ccw'),
+    a2v = ([x,y]) => ({x,y});
 
 `
       a
@@ -14,7 +15,7 @@ let expect = require('expect.js'),
 
 let a,b,c,d,e, 
     setup = () => {
-        [a,b,c,d,e] = [[0,0],[1,1],[0,2],[1,2],[2,2]];
+        [a,b,c,d,e] = [[0,0],[1,1],[0,2],[1,2],[2,2]].map(a2v),
         b.adj = [a,c,d,e];
         a.adj = [b];
         c.adj = [b];
@@ -25,21 +26,6 @@ let a,b,c,d,e,
 suite('cw-most');
 
 beforeEach(setup);
-
-test('no adjacent', () => {
-    b.adj = [];
-    expect(cw(a,b)).to.be(undefined);
-});
-
-test('one adjacent', () => {
-    b.adj = [e];
-    expect(cw(a,b)).to.be(e);
-});
-
-test('one adjacent, same as starting point', () => {
-    b.adj = [a];
-    expect(cw(a,b)).to.be(undefined);
-});
 
 test('starting at a', () => {
     expect(cw(a,b)).to.be(c);
@@ -58,27 +44,13 @@ test('starting at d', () => {
 });
 
 test('undefined starting point', () => {
-    expect(cw(undefined, b)).to.be(d);
+    b.adj = [a,c,e];
+    expect(cw(undefined, b)).to.be(e);
 });
 
 suite('ccw-most');
 
 beforeEach(setup);
-
-test('no adjacent', () => {
-    b.adj = [];
-    expect(ccw(a,b)).to.be(undefined);
-});
-
-test('one adjacent', () => {
-    b.adj = [e];
-    expect(ccw(a,b)).to.be(e);
-});
-
-test('one adjacent, same as starting point', () => {
-    b.adj = [a];
-    expect(cw(a,b)).to.be(undefined);
-});
 
 test('starting at a', () => {
     expect(ccw(a,b)).to.be(e);

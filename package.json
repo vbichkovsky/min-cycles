@@ -15,8 +15,8 @@
     "expect.js": "^0.3.1"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha",
-    "prepublish" : "node_modules/.bin/babel src -d lib"
+    "test": "mocha",
+    "prepublish" : "babel src -d lib"
   },
   "repository": {
     "type": "git",

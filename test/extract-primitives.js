@@ -1,6 +1,7 @@
-let expect = require('expect.js');
+let expect = require('expect.js'),
+    a2v = ([x,y]) => ({x,y});    
 
-import {extract_primitives as ep} from '../src/cycles';
+import {extract_cycles as ec} from '../src/cycles';
 
 let a,b,c,d,f,e1,e2,e3,e4;
 
@@ -11,47 +12,33 @@ let a,b,c,d,f,e1,e2,e3,e4;
              d       `;
 
 beforeEach( () => {
-    [a,b,c,d,f] = [[1,0], [2,0], [3,0], [3,1], [3,-1]];
+    [a,b,c,d,f] = [[1,0], [2,0], [3,0], [3,1], [3,-1]].map(a2v);
     [e1, e2, e3, e4] = [[a,b], [b,c], [b,d], [b,f]];
 });
 
 test('empty graph', () => {
-    let extracted = ep([], []);
-    expect(extracted.isolated).to.eql([]);
-    expect(extracted.cycles).to.eql([]);
-    expect(extracted.filaments).to.eql([]);
-});
-
-suite('isolated vertices');
-
-test('two isolated vertices', () => {
-    let extracted = ep([a,b], []);
-    expect(extracted.isolated).to.eql([a,b]);
-});
-
-test('two connected vertices', () => {
-    let extracted = ep([a,b], [e1]);
-    expect(extracted.isolated).to.eql([]);
+    let extracted = ec([], []);
+    expect(extracted).to.eql([]);
 });
 
 suite('filaments');
 
 test('one-segment filament', () => {
-    let extracted = ep([a,b], [e1]);
-    expect(extracted.filaments).to.eql([[a,b]]);
+    let extracted = ec([a,b], [e1]);
+    expect(extracted).to.eql([]);
 });
 
 test('two-segment filament', () => {
-    let extracted = ep([a,b,c], [e1, e2]);
-    expect(extracted.filaments).to.eql([[a,b,c]]);
+    let extracted = ec([a,b,c], [e1, e2]);
+    expect(extracted).to.eql([]);
 });
 
 test('a branch vertex', () => {
-    let extracted = ep([b,c,d], [e2, e3]);
-    expect(extracted.filaments).to.eql([[d,b,c]]);
+    let extracted = ec([b,c,d], [e2, e3]);
+    expect(extracted).to.eql([]);
 });
 
 test('a branch vertex with 3 adjacent', () => {
-    let extracted = ep([b,c,d,f], [e2, e3, e4]);
-    expect(extracted.filaments).to.eql([[d,b], [c,b,f]]);
+    let extracted = ec([b,c,d,f], [e2, e3, e4]);
+    expect(extracted).to.eql([]);
 });

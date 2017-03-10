@@ -1,6 +1,6 @@
 {
   "name": "min-cycles",
-  "version": "0.1.2",
+  "version": "0.2.0-pre",
   "description": "Minimal cycle basis for a planar graph",
   "main": "lib/cycles.js",
   "directories": {

@@ -1,6 +1,5 @@
-let expect = require('expect.js'),
-    a2v = ([x,y]) => ({x,y});
-
+import expect from 'expect.js';
+import {a2v, addEdges} from './util';
 import {extract_cycles as ec} from '../src/cycles';
 
 suite('complex graphs from the PDF v1/v2');
@@ -18,18 +17,18 @@ test('all kinds of primitives, v1', () => {
              [25,5],[25,9],[20,9],
              [22,8],[23,6],[24,8]].map(a2v),
         vertices = [f1,f2,f3,f4,f5,f6,f7,f8,f9,
-                    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17],
-        edges = [[f1,f2],[f2,f3],
-                 [f4,f5],[f5,f6],
-                 [f7,f8],[f8,f9],
-                 [c1,c2],[c2,f3],[c1,f4],[f3,f4],
-                 [c3,c4],[c4,c5],[c5,c3],
-                 [f6,c7],[c7,c8],[c8,c9],[c9,c10],[c10,c11],[c9,c11],[c6,c11],[f6,c6],[c6,c7],
-                 [c11,c12],[c12,c13],[c13,c14],[c14,c11],
-                 [c15,c16],[c16,c17],[c17,c15]],
-        cycles = ec(vertices, edges);
-    
-    expect(cycles).to.eql([
+                    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17];
+
+    addEdges([ [f1,f2],[f2,f3],
+               [f4,f5],[f5,f6],
+               [f7,f8],[f8,f9],
+               [c1,c2],[c2,f3],[c1,f4],[f3,f4],
+               [c3,c4],[c4,c5],[c5,c3],
+               [f6,c7],[c7,c8],[c8,c9],[c9,c10],[c10,c11],[c9,c11],[c6,c11],[f6,c6],[c6,c7],
+               [c11,c12],[c12,c13],[c13,c14],[c14,c11],
+               [c15,c16],[c16,c17],[c17,c15] ]);
+
+    expect(ec(vertices)).to.eql([
         [c2,f3,f4,c1],
         [c3,c5,c4],
         [f6,c6,c7],
@@ -46,8 +45,8 @@ test('just cycles, v2', () => {
         e = [[0,1], [1,2], [2,3], [3,4], [2,5], [0,5], [5,6], [6,8], [10,11], [11,12], [12,10], [13,14],
              [14,15], [8,9], [9,7], [7,8], [9,28], [28,29], [29,30], [30,28], [9,16], [16,26], [26,27],
              [27,16], [16,17], [17,19], [17,18], [18,19], [18,7], [18,22], [22,21], [21,20], [20,18],
-             [20,23], [23,24], [24,25], [25,23]],
-        edges = e.map(([a,b]) => [v[a], v[b]]),
-        cycles = ec(v, edges);
-    expect(cycles.length).to.eql(9);
+             [20,23], [23,24], [24,25], [25,23]];
+    addEdges( e.map(([a,b]) => [v[a], v[b]]) );
+    
+    expect(ec(v).length).to.eql(9);
 });

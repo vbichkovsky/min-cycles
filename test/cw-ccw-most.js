@@ -1,10 +1,11 @@
-let expect = require('expect.js'),
-    rewire = require('rewire'),
-    cycles = rewire('../src/cycles'),
+import expect from 'expect.js';
+import rewire from 'rewire';
+import {a2v} from './util';
+
+let cycles = rewire('../src/cycles'),
     bbk = cycles.__get__('best_by_kind'),
     cw = (a,b) => bbk(a,b,'cw'),
-    ccw = (a,b) => bbk(a,b,'ccw'),
-    a2v = ([x,y]) => ({x,y});
+    ccw = (a,b) => bbk(a,b,'ccw');
 
 `
       a

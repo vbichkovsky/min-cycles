@@ -1,7 +1,6 @@
-let expect = require('expect.js'),
-    a2v = ([x,y]) => ({x,y});
-
-import {extract_cycles as ec} from '../src/cycles';    
+import expect from 'expect.js';
+import {a2v, addEdges} from './util';
+import {extract_cycles as ec} from '../src/cycles';
 
 suite('real-life data');
 
@@ -13,7 +12,9 @@ test('graph causing a stack overflow', () => {
     getv = (pt) => vertices.find(v => v.x == pt[0] && v.y == pt[1]),
         ref_edges = edges.map( ({v}) => [getv(v[0]), getv(v[1])] );
 
-    expect(ec).withArgs(vertices, ref_edges).to.not.throwException();
+    addEdges(ref_edges);
+
+    expect(ec).withArgs(vertices).to.not.throwException();
 });
 
 
@@ -25,5 +26,8 @@ test('the case with two connected triangles', () => {
         addVertices = (vs, [a,b]) => addVertex(addVertex(vs, a), b),
         vertices = walls.reduce(addVertices, []),
         edges = walls.map(([a,b]) => [findVertex(vertices, a), findVertex(vertices, b)]);
-    expect(ec).withArgs(vertices, edges).to.not.throwException();
+
+    addEdges(edges);
+    
+    expect(ec).withArgs(vertices).to.not.throwException();
 });

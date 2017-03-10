@@ -1,10 +1,4 @@
 export function extract_cycles(vertices, edges) {
-    vertices.forEach(v => v.adj = []);
-    edges.forEach(e => {
-        e[0].adj.push(e[1]);
-        e[1].adj.push(e[0]);
-    });
-
     let cycles = [];
     while (vertices.length > 0) {
         let v = leftBottomVertex(vertices),
